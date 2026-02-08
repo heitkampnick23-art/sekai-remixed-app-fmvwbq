@@ -1,0 +1,125 @@
+
+import { StatusBar } from "expo-status-bar";
+import { useFonts } from "expo-font";
+import { useColorScheme } from "react-native";
+import { WidgetProvider } from "@/contexts/WidgetContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import React, { useEffect } from "react";
+import { SystemBars } from "react-native-edge-to-edge";
+import "react-native-reanimated";
+import { useNetworkState } from "expo-network";
+import {
+  DarkTheme,
+  DefaultTheme,
+  Theme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { View, ActivityIndicator } from "react-native";
+
+SplashScreen.preventAutoHideAsync();
+
+// Auth guard component to handle navigation based on auth state
+function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+
+    const inAuthGroup = segments[0] === 'auth' || segments[0] === 'auth-popup' || segments[0] === 'auth-callback';
+
+    if (!user && !inAuthGroup) {
+      // Redirect to auth if not authenticated
+      router.replace('/auth');
+    } else if (user && inAuthGroup) {
+      // Redirect to home if authenticated and trying to access auth pages
+      router.replace('/(tabs)/(home)');
+    }
+  }, [user, loading, segments]);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F0F0F' }}>
+        <ActivityIndicator size="large" color="#8B5CF6" />
+      </View>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+const CustomDarkTheme: Theme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: '#8B5CF6',
+    background: '#0F0F0F',
+    card: '#1A1A1A',
+    text: '#FFFFFF',
+    border: '#2A2A2A',
+    notification: '#8B5CF6',
+  },
+};
+
+const CustomLightTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#8B5CF6',
+    background: '#FFFFFF',
+    card: '#F5F5F5',
+    text: '#000000',
+    border: '#E5E5E5',
+    notification: '#8B5CF6',
+  },
+};
+
+export default function RootLayout() {
+  const { isConnected } = useNetworkState();
+  const [loaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  const colorScheme = useColorScheme();
+
+  if (!loaded) {
+    return null;
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === "dark" ? CustomDarkTheme : CustomLightTheme}>
+        <AuthProvider>
+          <AuthGuard>
+            <WidgetProvider>
+              <SystemBars style={colorScheme === "dark" ? "light" : "dark"} />
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="auth" options={{ headerShown: false }} />
+                <Stack.Screen name="auth-popup" options={{ headerShown: false }} />
+                <Stack.Screen name="auth-callback" options={{ headerShown: false }} />
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="chat/[id]" options={{ headerShown: true, title: "Chat" }} />
+                <Stack.Screen name="character/create" options={{ headerShown: true, title: "Create Character" }} />
+                <Stack.Screen name="character/[id]" options={{ headerShown: true, title: "Character Details" }} />
+                <Stack.Screen name="story/create" options={{ headerShown: true, title: "Create Story" }} />
+                <Stack.Screen name="story/[id]" options={{ headerShown: true, title: "Story" }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+              <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+            </WidgetProvider>
+          </AuthGuard>
+        </AuthProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
+  );
+}
