@@ -1,3 +1,4 @@
+
 {
   "expo": {
     "name": "Sekai Remixed",
@@ -15,17 +16,18 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cooltest.sekairemixed",
+      "buildNumber": "6",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
               "sekairemixed"
-            ]
+            ],
+            "CFBundleURLName": "com.cooltest.sekairemixed"
           }
         ]
       },
-      "buildNumber": "1",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -37,7 +39,22 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.cooltest.sekairemixed",
-      "versionCode": 1
+      "versionCode": 1,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "sekairemixed"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/images/final_quest_240x240.png",
