@@ -19,7 +19,9 @@
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": ["sekairemixed"]
+            "CFBundleURLSchemes": [
+              "sekairemixed"
+            ]
           }
         ]
       },
