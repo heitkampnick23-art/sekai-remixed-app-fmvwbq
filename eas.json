@@ -1,16 +1,38 @@
 {
+  "cli": {
+    "version": ">= 13.2.0"
+  },
   "build": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "autoIncrement": true
+      "ios": {
+        "simulator": true
+      }
     },
     "preview": {
       "distribution": "internal",
-      "autoIncrement": true
+      "ios": {
+        "simulator": false
+      }
     },
     "production": {
-      "autoIncrement": true
+      "ios": {
+        "simulator": false,
+        "bundleIdentifier": "com.cooltest.sekairemixed"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "6758922426",
+        "appleTeamId": "YOUR_TEAM_ID"
+      }
     }
   }
 }
