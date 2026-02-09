@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Sekai Remixed Role-Play",
-    "slug": "Sekai Remixed Role-Play",
+    "name": "Sekai Remixed",
+    "slug": "sekairemixed",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon-pxl.png",
@@ -17,7 +17,8 @@
       "bundleIdentifier": "com.cooltest.sekairemixed",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,7 +26,8 @@
         "backgroundColor": "#000000"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.cooltest.sekairemixed"
+      "package": "com.cooltest.sekairemixed",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/final_quest_240x240.png",
