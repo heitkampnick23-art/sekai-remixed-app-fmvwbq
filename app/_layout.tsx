@@ -6,7 +6,7 @@ import { WidgetProvider } from "@/contexts/WidgetContext";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import * as SplashScreen from "expo-splash-screen";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { SystemBars } from "react-native-edge-to-edge";
 import "react-native-reanimated";
 import { useNetworkState } from "expo-network";
@@ -26,22 +26,46 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const hasNavigated = useRef(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) {
+      console.log("[AuthGuard] Still loading, waiting...");
+      return;
+    }
 
     const inAuthGroup = segments[0] === 'auth' || segments[0] === 'auth-popup' || segments[0] === 'auth-callback';
 
+    console.log("[AuthGuard] Auth state:", { user: !!user, inAuthGroup, segments: segments.join('/') });
+
+    // Prevent multiple navigations
+    if (hasNavigated.current) {
+      console.log("[AuthGuard] Already navigated, skipping");
+      return;
+    }
+
     if (!user && !inAuthGroup) {
       // Redirect to auth if not authenticated
+      console.log("[AuthGuard] Not authenticated, redirecting to /auth");
+      hasNavigated.current = true;
       router.replace('/auth');
     } else if (user && inAuthGroup) {
       // Redirect to home if authenticated and trying to access auth pages
+      console.log("[AuthGuard] Authenticated in auth group, redirecting to home");
+      hasNavigated.current = true;
       router.replace('/(tabs)/(home)');
+    } else {
+      console.log("[AuthGuard] No navigation needed");
     }
-  }, [user, loading, segments]);
+  }, [user, loading]);
+
+  // Reset navigation flag when user state changes
+  useEffect(() => {
+    hasNavigated.current = false;
+  }, [user]);
 
   if (loading) {
+    console.log("[AuthGuard] Showing loading screen");
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0F0F0F' }}>
         <ActivityIndicator size="large" color="#8B5CF6" />
