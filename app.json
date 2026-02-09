@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Sekai Remixed",
-    "slug": "Sekai Remixed",
+    "name": "Sekai Remixed Role-Play",
+    "slug": "Sekai Remixed Role-Play",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon-pxl.png",
@@ -36,7 +36,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "Sekai Remixed",
+    "scheme": "Sekai Remixed Role-Play",
     "experiments": {
       "typedRoutes": true
     },
