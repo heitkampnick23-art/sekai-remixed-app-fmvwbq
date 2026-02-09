@@ -36,7 +36,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "Sekai Remixed Role-Play",
+    "scheme": "sekairemixed",
     "experiments": {
       "typedRoutes": true
     },

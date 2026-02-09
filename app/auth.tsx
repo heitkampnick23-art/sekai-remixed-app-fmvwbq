@@ -43,13 +43,21 @@ export default function AuthScreen() {
       return;
     }
 
+    if (mode === "signup" && password.length < 8) {
+      setErrorModal({ visible: true, message: "Password must be at least 8 characters long" });
+      return;
+    }
+
     setLoading(true);
     try {
+      console.log(`[Auth] Attempting ${mode} with email:`, email);
       if (mode === "signin") {
         await signInWithEmail(email, password);
+        console.log("[Auth] Sign in successful, navigating to home");
         router.replace("/(tabs)/(home)");
       } else {
         await signUpWithEmail(email, password, name);
+        console.log("[Auth] Sign up successful");
         setSuccessModal({
           visible: true,
           message: "Account created successfully! Welcome to Sekai Remixed."
@@ -59,7 +67,9 @@ export default function AuthScreen() {
         }, 1500);
       }
     } catch (error: any) {
-      setErrorModal({ visible: true, message: error.message || "Authentication failed" });
+      console.error(`[Auth] ${mode} failed:`, error);
+      const errorMessage = error.message || error.toString() || "Authentication failed";
+      setErrorModal({ visible: true, message: errorMessage });
     } finally {
       setLoading(false);
     }

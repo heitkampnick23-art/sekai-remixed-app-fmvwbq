@@ -97,19 +97,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUser = async () => {
     try {
       setLoading(true);
+      console.log("[AuthContext] Fetching user session...");
       const session = await authClient.getSession();
+      console.log("[AuthContext] Session result:", session);
+      
       if (session?.data?.user) {
+        console.log("[AuthContext] User found:", session.data.user.email);
         setUser(session.data.user as User);
         // Sync token to SecureStore for utils/api.ts
         if (session.data.session?.token) {
+          console.log("[AuthContext] Syncing bearer token to storage");
           await setBearerToken(session.data.session.token);
         }
       } else {
+        console.log("[AuthContext] No user session found");
         setUser(null);
         await clearAuthTokens();
       }
     } catch (error) {
-      console.error("Failed to fetch user:", error);
+      console.error("[AuthContext] Failed to fetch user:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -118,26 +124,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithEmail = async (email: string, password: string) => {
     try {
-      await authClient.signIn.email({ email, password });
+      console.log("[AuthContext] Signing in with email:", email);
+      const result = await authClient.signIn.email({ email, password });
+      console.log("[AuthContext] Sign in result:", result);
       await fetchUser();
-    } catch (error) {
-      console.error("Email sign in failed:", error);
-      throw error;
+    } catch (error: any) {
+      console.error("[AuthContext] Email sign in failed:", error);
+      // Better error messages
+      if (error.message?.includes("401") || error.message?.includes("Unauthorized")) {
+        throw new Error("Invalid email or password. Please check your credentials and try again.");
+      } else if (error.message?.includes("network") || error.message?.includes("fetch")) {
+        throw new Error("Network error. Please check your internet connection.");
+      }
+      throw new Error(error.message || "Sign in failed. Please try again.");
     }
   };
 
   const signUpWithEmail = async (email: string, password: string, name?: string) => {
     try {
-      await authClient.signUp.email({
+      console.log("[AuthContext] Signing up with email:", email, "name:", name);
+      const result = await authClient.signUp.email({
         email,
         password,
         name,
-        // Ensure name is passed in header or logic if required, usually passed in body
       });
+      console.log("[AuthContext] Sign up result:", result);
       await fetchUser();
-    } catch (error) {
-      console.error("Email sign up failed:", error);
-      throw error;
+    } catch (error: any) {
+      console.error("[AuthContext] Email sign up failed:", error);
+      // Better error messages
+      if (error.message?.includes("422") || error.message?.includes("already exists")) {
+        throw new Error("An account with this email already exists. Please sign in instead.");
+      } else if (error.message?.includes("password")) {
+        throw new Error("Password must be at least 8 characters long.");
+      } else if (error.message?.includes("email")) {
+        throw new Error("Please enter a valid email address.");
+      } else if (error.message?.includes("network") || error.message?.includes("fetch")) {
+        throw new Error("Network error. Please check your internet connection.");
+      }
+      throw new Error(error.message || "Sign up failed. Please try again.");
     }
   };
 

@@ -6,7 +6,7 @@ import Constants from "expo-constants";
 
 const API_URL = Constants.expoConfig?.extra?.backendUrl || "";
 
-export const BEARER_TOKEN_KEY = "roleplay-ai_bearer_token";
+export const BEARER_TOKEN_KEY = "sekairemixed_bearer_token";
 
 // Platform-specific storage: localStorage for web, SecureStore for native
 const storage = Platform.OS === "web"
@@ -21,8 +21,8 @@ export const authClient = createAuthClient({
   baseURL: API_URL,
   plugins: [
     expoClient({
-      scheme: "roleplay-ai",
-      storagePrefix: "roleplay-ai",
+      scheme: "sekairemixed",
+      storagePrefix: "sekairemixed",
       storage,
     }),
   ],
